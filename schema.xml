@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+    <schema name="TESTDB" checkSQLschema="true" sqlMaxLimit="100" randomDataNode="dn1">
+        <table name="department" primaryKey="Dno" dataNode="dn1"></table>
+        
+        <table name="course" primaryKey="Cno" dataNode="dn1,dn2" type="global"></table>
+        <table name="student" primaryKey="Sno" dataNode="dn1, dn2" rule="mod_rule">
+            <childTable name="sc" primaryKey="id" joinKey="Stuid" parentKey="Sno" />
+        </table>
+    </schema>
+
+    <dataNode name="dn1" dataHost="centos7-022" database="testStu" />
+    <dataNode name="dn2" dataHost="centos7-023" database="testStu" />
+
+    <dataHost name="centos7-022" maxCon="1000" minCon="10" balance="1" writeType="0" dbType="mysql" dbDriver="native" switchType="2" slaveThreshold="100">
+        <heartbeat>select user()</heartbeat>
+        <writeHost host="hostM1" url="centos7-022:3306" user="root" password="040520-Nj">
+            <readHost host="hostS1" url="centos7-024:3306" user="root" password="040520-Nj" />
+        </writeHost>
+    </dataHost>
+
+    <dataHost name="centos7-023" maxCon="1000" minCon="10" balance="0" writeType="0" dbType="mysql" dbDriver="native" switchType="1" slaveThreshold="100">
+        <heartbeat>select user()</heartbeat>
+        <writeHost host="hostM1" url="centos7-023:3306" user="root" password="040520-Nj">
+        </writeHost>
+    </dataHost>
+
+</mycat:schema>
